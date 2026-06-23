@@ -1,0 +1,149 @@
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+ 
+/* ================= I2C LCD CONFIG ================= */
+#define I2C_FREQ 100000UL
+#define LCD_ADDR 0x27     // Try 0x3F if LCD does not show
+ 
+#define LCD_RS 0x01
+#define LCD_EN 0x04
+#define LCD_BL 0x08
+ 
+/* ================= I2C FUNCTIONS ================= */
+void i2c_init(void)
+{
+    TWSR = 0x00;
+    TWBR = ((F_CPU / I2C_FREQ) - 16) / 2;
+}
+ 
+void i2c_start(uint8_t addr)
+{
+    TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    TWDR = addr;
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+}
+ 
+void i2c_write(uint8_t data)
+{
+    TWDR = data;
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+}
+ 
+void i2c_stop(void)
+{
+    TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+}
+ 
+/* ================= LCD FUNCTIONS ================= */
+void lcd_send(uint8_t data, uint8_t rs)
+{
+    uint8_t high = (data & 0xF0) | LCD_BL | rs;
+    uint8_t low  = ((data << 4) & 0xF0) | LCD_BL | rs;
+ 
+    i2c_start(LCD_ADDR << 1);
+    i2c_write(high | LCD_EN);
+    _delay_us(1);
+    i2c_write(high);
+    i2c_write(low | LCD_EN);
+    _delay_us(1);
+    i2c_write(low);
+    i2c_stop();
+}
+ 
+void lcd_cmd(uint8_t cmd)   { lcd_send(cmd, 0); }
+void lcd_data(uint8_t data){ lcd_send(data, LCD_RS); }
+ 
+void lcd_init(void)
+{
+    _delay_ms(50);
+    lcd_cmd(0x33);
+    lcd_cmd(0x32);
+    lcd_cmd(0x28);
+    lcd_cmd(0x0C);
+    lcd_cmd(0x06);
+    lcd_cmd(0x01);
+    _delay_ms(2);
+}
+ 
+void lcd_clear(void)
+{
+    lcd_cmd(0x01);
+    _delay_ms(2);
+}
+ 
+void lcd_print(char *str)
+{
+    while (*str)
+        lcd_data(*str++);
+}
+ 
+/* ================= RF DETECTION (STABLE) ================= */
+uint8_t rf_detected(void)
+{
+    uint8_t activity = 0;
+ 
+    for (uint8_t i = 0; i < 20; i++)
+    {
+        if (PIND & (1 << PD2))
+            activity++;
+        _delay_ms(1);
+    }
+ 
+    return (activity >= 3);
+}
+ 
+/* ================= MAIN ================= */
+int main(void)
+{
+    /* IO SETUP */
+    DDRD &= ~(1 << PD2);   // RF DATA input (D2)
+    DDRD &= ~(1 << PD3);   // Push button (D3)
+    DDRB |=  (1 << PB0);   // RX LED (D8)
+ 
+    PORTD |= (1 << PD3);   // Button pull-up
+    PORTB &= ~(1 << PB0);  // LED OFF
+ 
+    /* LCD INIT */
+    i2c_init();
+    lcd_init();
+    lcd_clear();
+    lcd_print("SYSTEM READY");
+ 
+    uint8_t led_latch = 0;
+ 
+    _delay_ms(500);        // RF settle time
+ 
+    while (1)
+    {
+        /* -------- RESET BUTTON -------- */
+        if (!(PIND & (1 << PD3)))
+        {
+            led_latch = 0;
+            PORTB &= ~(1 << PB0);
+ 
+            lcd_clear();
+            lcd_print("SYSTEM READY");
+ 
+            while (!(PIND & (1 << PD3)));
+            _delay_ms(200);
+        }
+ 
+        /* -------- RF DETECT -------- */
+        if (!led_latch && rf_detected())
+        {
+            led_latch = 1;
+            lcd_clear();
+            lcd_print("WATER DETECTED");
+        }
+ 
+        /* -------- LED DRIVE -------- */
+        if (led_latch)
+            PORTB |= (1 << PB0);
+        else
+            PORTB &= ~(1 << PB0);
+    }
+}
