@@ -19,25 +19,6 @@ When water is detected at the transmitter side, an alert is sent wirelessly to t
 - Buzzer mute functionality
 - Low-power battery operation
 
-     ARCHITECTUTE
-
-     Water Sensor
-      ↓
-    ATmega328
-      ↓
-    433 MHz RF Transmitter
-      ↓
-    433 MHz RF Receiver
-      ↓
-    ATmega328
-      ↓
-   ┌───────────────┐
-   │ Buzzer & LEDs │
-   └───────────────┘
-      ↓
-    ESP32 Interface
-      ↓
-    LCD Display
 
 ## Hardware Components
 
