@@ -87,7 +87,7 @@ When water is detected at the transmitter side, an alert is sent wirelessly to t
 
 ## Transmitter Unit and Reciver unit
 
-![Transmitter and Reciver](Transmitter and Reciver.jpg)
+![Transmitter and Reciver](Transmiter and Reciver.jpg)
 
 ## Interface
 ![Interface](interface.jpg)
