@@ -82,12 +82,10 @@ When water is detected at the transmitter side, an alert is sent wirelessly to t
 - AI-based flood prediction
 
 ## System Overview
-
-![Full setup](Full setup.jpg)
+![Full_setup](Full setup.jpg)
 
 ## Transmitter Unit and Reciver unit
-
-![Transmitter and Reciver](Transmiter and Reciver.jpg)
+![Transmitter_and_Reciver](Transmiter and Reciver.jpg)
 
 ## Interface
 ![Interface](interface.jpg)
