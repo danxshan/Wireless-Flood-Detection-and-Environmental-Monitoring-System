@@ -81,11 +81,3 @@ When water is detected at the transmitter side, an alert is sent wirelessly to t
 - Mobile application
 - AI-based flood prediction
 
-## System Overview
-![Full_setup](Full setup.jpg)
-
-## Transmitter Unit and Reciver unit
-![Transmitter_and_Reciver](Transmiter and Reciver.jpg)
-
-## Interface
-![Interface](interface.jpg)
