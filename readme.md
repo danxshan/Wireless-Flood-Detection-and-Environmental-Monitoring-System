@@ -24,33 +24,7 @@ The collected data is displayed on a local LCD screen and an ESP32-powered monit
 * 🔄 Interface-based alarm reset mechanism
 * 🔋 Portable battery-powered operation
 
----
 
-## 🏗️ System Architecture
-
-Water Sensor → ATmega328P → RF Transmitter (433 MHz)
-
-↓
-
-RF Receiver (433 MHz) → ATmega328P
-
-↓
-
-Alarm System (LEDs + Buzzer)
-
-↓
-
-Environmental Sensors
-
-• Ultrasonic Sensor (Water Depth)
-
-• DHT11 (Temperature & Humidity)
-
-↓
-
-ESP32 Dashboard + 16×2 LCD Display
-
----
 
 ## 🔧 Hardware Components
 
@@ -127,22 +101,4 @@ ESP32 Dashboard + 16×2 LCD Display
 * Historical Data Analytics
 * Multi-Node Sensor Network
 
----
 
-## 📷 Project Demonstration
-
-### Complete System Setup
-
-(Add project image here)
-
-### Transmitter and Receiver Units
-
-(Add project image here)
-
-### Monitoring Dashboard
-
-(Add dashboard image here)
-
----
-
-.
